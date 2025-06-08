@@ -12,7 +12,9 @@ function App() {
   };
 
   const updatedTodo = (id, todo) => {
-    setTodos((prev) => prev.map((t) => (t.id === id ? todo : t)));
+    setTodos((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, ...todo } : t))
+    );
   };
 
   const deleteTodo = (id) => {
@@ -27,17 +29,23 @@ function App() {
     );
   };
 
+  // Load from localStorage on mount
   useEffect(() => {
-    const todos = JSON.parse(localStorage.getItem("todos"));
-    if (todos && todos.length > 0) setTodos(todos);
+    const storedTodos = JSON.parse(localStorage.getItem("todos"));
+    if (storedTodos && Array.isArray(storedTodos)) {
+      setTodos(storedTodos);
+    }
   }, []);
 
+  // Save to localStorage on any change
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
   return (
-    <TodoProvider value={{ todos, addTodo, updatedTodo, deleteTodo, toggleCompleted }}>
+    <TodoProvider
+      value={{ todos, addTodo, updatedTodo, deleteTodo, toggleCompleted }}
+    >
       <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 py-10 px-4 text-white">
         <div className="max-w-2xl mx-auto bg-white/10 backdrop-blur-md rounded-xl shadow-lg p-6 border border-white/20">
           <h1 className="text-3xl font-bold text-center mb-6 text-white drop-shadow">
@@ -60,4 +68,3 @@ function App() {
 }
 
 export default App;
-
